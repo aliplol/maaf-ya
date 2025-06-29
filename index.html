@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permohonan Maaf Spesial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+        .shake {
+            animation: shake 0.5s infinite;
+        }
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .fade-in {
+            animation: fadeIn 1.5s forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 text-center">
+        <h1 class="text-4xl font-bold text-pink-600 mb-6">Maafin Alip 💝</h1>
+        
+        <div class="relative mb-8 flex justify-center">
+            <div id="character" class="relative bounce cursor-pointer">
+                <img src="ChatGPT Image Jun 29, 2025, 01_31_46 PM.png" alt="Karakter kartun sedih berwarna pink dengan mata besar berkaca-kaca dan mulut melengkung ke bawah" class="rounded-full border-4 border-pink-200" />
+                <div id="tear" class="absolute top-1/2 left-1/2 -mt-4 -ml-1 w-2 h-6 bg-blue-200 rounded-full opacity-0"></div>
+            </div>
+        </div>
+
+        <div class="space-y-4 mb-8">
+            <div class="bubble bg-pink-100 text-pink-800 p-4 rounded-full inline-block max-w-xs shake">
+                maaf mungkin ell ngira, ell cuma dijadiin pelarian alip😥
+            </div>
+            <div class="bubble bg-pink-100 text-pink-800 p-4 rounded-full inline-block max-w-xs shake">
+                Alip gak ada bermaksud gitu😥
+            </div>
+            <div class="bubble bg-pink-100 text-pink-800 p-4 rounded-full inline-block max-w-xs shake">
+                maafin alip ya, alip juga masih suka egois 🤗
+            </div>
+        </div>
+
+        <div class="flex space-x-4 justify-center">
+            <button id="btnYes" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105">
+                Iya, aku maafin ❤️
+            </button>
+            <button id="btnNo" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition-all">
+                Tunggu dulu...
+            </button>
+        </div>
+    </div>
+    <button id="btnViewReasons" class="fixed bottom-4 right-4 bg-pink-500 text-white p-3 rounded-full shadow-lg hidden">👀 Lihat Alasan</button>
+    <button id="btnAdminMode" class="fixed bottom-4 left-4 bg-gray-500 text-white p-3 rounded-full shadow-lg">Admin Mode</button>
+
+    <!-- Existing celebration modal -->
+    <div id="celebration" class="fixed inset-0 flex items-center justify-center hidden z-20">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm">
+            <h2 class="text-3xl font-bold text-pink-600 mb-4">Terima kasih 💕</h2>
+            <p class="text-gray-700 mb-6">Alip pasti bakalan berubah, nggak ilang-ilangan lagi</p>
+            <img src="ChatGPT Image Jun 29, 2025, 01_57_40 PM.png" alt="Dua karakter kartun sedang berpelukan dengan latar belakang hati" class="mx-auto rounded-full border-4 border-pink-200 mb-4" />
+            <button id="btnClose" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- New reason modal -->
+    <div id="reasonModal" class="fixed inset-0 flex items-center justify-center hidden z-20 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full">
+            <h2 class="text-2xl font-bold text-pink-600 mb-4">Kenapa ell belum mau memaafkanku? 😢</h2>
+            <textarea id="reasonText" class="w-full px-4 py-2 border-2 border-pink-200 rounded-lg mb-4 focus:outline-none focus:border-pink-400" placeholder="Kasih tahu aku apa yang harus aku perbaiki..."></textarea>
+            <div class="flex justify-center space-x-4">
+                <button id="btnSubmitReason" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full">
+                    Kirim Alasan 💌
+                </button>
+                <button id="btnCancelReason" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-full">
+                    Batal
+                </button>
+            </div>
+            <div id="displayReason" class="mt-4 text-left hidden">
+                <h3 class="text-lg font-bold text-pink-600">Alasanmu:</h3>
+                <p id="reasonOutput" class="text-gray-700"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Reasons Modal -->
+    <div id="viewReasonModal" class="fixed inset-0 flex items-center justify-center hidden z-20 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full">
+            <h2 class="text-2xl font-bold text-pink-600 mb-4">Alasan Pasanganmu</h2>
+            <div id="viewReasonList" class="text-left mb-4"></div>
+            <button id="btnCloseReasons" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const character = document.getElementById('character');
+        const tear = document.getElementById('tear');
+        const btnYes = document.getElementById('btnYes');
+        const btnNo = document.getElementById('btnNo');
+        const celebration = document.getElementById('celebration');
+        const btnClose = document.getElementById('btnClose');
+
+        // Efek ketika hover karakter
+        character.addEventListener('mouseenter', () => {
+            tear.style.opacity = '1';
+            tear.style.animation = 'fadeIn 1s infinite alternate';
+        });
+
+        character.addEventListener('mouseleave', () => {
+            tear.style.opacity = '0';
+            tear.style.animation = 'none';
+        });
+
+        // Efek ketika klik tombol
+        btnNo.addEventListener('mouseenter', function() {
+            this.classList.add('shake');
+            const rect = this.getBoundingClientRect();
+            this.style.position = 'relative';
+            this.style.left = `${Math.random() * 20 - 10}px`;
+            this.style.top = `${Math.random() * 20 - 10}px`;
+        });
+
+        btnNo.addEventListener('mouseleave', function() {
+            this.classList.remove('shake');
+            this.style.left = '0';
+            this.style.top = '0';
+        });
+
+        // Handle click on "Tunggu dulu" button
+        btnNo.addEventListener('click', function() {
+            reasonModal.classList.remove('hidden');
+        });
+
+        // Reason modal elements
+        const reasonModal = document.getElementById('reasonModal');
+        const reasonText = document.getElementById('reasonText');
+        const btnSubmitReason = document.getElementById('btnSubmitReason');
+        const btnCancelReason = document.getElementById('btnCancelReason');
+
+        // Array untuk menyimpan alasan
+        let reasonHistory = [];
+
+        // Handle reason submission
+        btnSubmitReason.addEventListener('click', function() {
+            if (reasonText.value.trim() === '') {
+                alert('Tolong tuliskan alasannya dulu ya...');
+                return;
+            }
+            // Simpan alasan ke dalam array
+            reasonHistory.push(reasonText.value);
+            // Simpan ke localStorage
+            localStorage.setItem('apologyReasons', JSON.stringify(reasonHistory));
+            // Tampilkan alasan di modal
+            document.getElementById('reasonOutput').innerText = reasonText.value;
+            document.getElementById('displayReason').classList.remove('hidden');
+            reasonModal.classList.add('hidden');
+            reasonText.value = '';
+        });
+
+        // Cancel reason
+        btnCancelReason.addEventListener('click', function() {
+            reasonModal.classList.add('hidden');
+            reasonText.value = '';
+        });
+
+        // Ketika klik iya
+        btnYes.addEventListener('click', function() {
+            celebration.classList.remove('hidden');
+            
+            // Buat efek hati
+            for (let i = 0; i < 30; i++) {
+                createHeart();
+            }
+        });
+
+        btnClose.addEventListener('click', function() {
+            celebration.classList.add('hidden');
+        });
+
+        // Fungsi buat hati
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'heart text-pink-500 text-2xl';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            document.body.appendChild(heart);
+            
+            // Animasi jatuh
+            let posY = window.innerHeight;
+            let opacity = 1;
+            let size = Math.random() * 20 + 10;
+            heart.style.fontSize = size + 'px';
+            
+            const fall = setInterval(() => {
+                posY -= 2;
+                opacity -= 0.01;
+                heart.style.top = posY + 'px';
+                heart.style.opacity = opacity;
+                
+                if (opacity <= 0) {
+                    clearInterval(fall);
+                    heart.remove();
+                }
+            }, 20);
+        }
+
+        // Handle click on "Lihat Alasan Pasangan" button
+        document.getElementById('btnViewReasons').addEventListener('click', function() {
+            // Load reasons from localStorage
+            const savedReasons = JSON.parse(localStorage.getItem('apologyReasons')) || [];
+            const reasonList = document.getElementById('viewReasonList');
+            
+            if (savedReasons.length === 0) {
+                reasonList.innerHTML = '<p class="text-gray-600">Belum ada alasan yang dikirim</p>';
+            } else {
+                reasonList.innerHTML = savedReasons.map((reason, index) => 
+                    `<div class="mb-3 p-3 bg-pink-50 rounded-lg">
+                        <h3 class="font-bold text-pink-700">Alasan #${index + 1}:</h3>
+                        <p class="text-gray-700">${reason}</p>
+                    </div>`
+                ).join('');
+            }
+            document.getElementById('viewReasonModal').classList.remove('hidden');
+        });
+
+        // Close reasons modal
+        document.getElementById('btnCloseReasons').addEventListener('click', function() {
+            document.getElementById('viewReasonModal').classList.add('hidden');
+        });
+
+        // Admin mode functionality
+        document.getElementById('btnAdminMode').addEventListener('click', function() {
+            const password = prompt("Masukkan password admin:");
+            const adminPassword = "admin123"; // Change this to a more secure password
+            
+            if(password === adminPassword) {
+                const savedReasons = JSON.parse(localStorage.getItem('apologyReasons')) || [];
+                const reasonList = document.getElementById('viewReasonList');
+                
+                if (savedReasons.length === 0) {
+                    reasonList.innerHTML = '<p class="text-gray-600">Belum ada alasan yang dikirim</p>';
+                } else {
+                    reasonList.innerHTML = savedReasons.map((reason, index) => 
+                        `<div class="mb-3 p-3 bg-pink-50 rounded-lg">
+                            <h3 class="font-bold text-pink-700">Alasan #${index + 1}:</h3>
+                            <p class="text-gray-700">${reason}</p>
+                        </div>`
+                    ).join('');
+                }
+                document.getElementById('viewReasonModal').classList.remove('hidden');
+            } else {
+                alert("Password salah!");
+            }
+        });
+    </script>
+</body>
+</html>
